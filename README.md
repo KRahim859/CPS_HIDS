@@ -18,17 +18,62 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Usage Policy
 This dataset is open source and available for academic purposes. Researchers, students, and academics are encouraged to use this data for their projects, and experiments or fruther imporvemt to data. Please cite appropriately to use this data in your work. 
 
-## Contribution 
+## Contribution
 
-We welcome any contributions to improve this dataset. If you would like to contribute, please follow these steps:
+We welcome contributions to improve the CPS_HIDS dataset and its associated tools. Here are the steps to contribute:
 
-Fork the repository.
+### Steps to Contribute
 
-Create a new branch: git checkout -b feature-branch
+1. **Fork the repository**
+   - Click the "Fork" button on the top right of the repository page on GitHub.
 
-Make your changes and commit them: git commit -m 'Add some feature'
+2. **Clone your forked repository**
+   - Clone your forked repository to your local machine:
+     ```bash
+     git clone https://github.com/YOUR_USERNAME/CPS_HIDS.git
+     ```
+   - Navigate into the cloned directory:
+     ```bash
+     cd CPS_HIDS
+     ```
 
-Push to the branch: git push origin feature-branch
+3. **Create a new branch**
+   - Create a new branch for your feature or fix:
+     ```bash
+     git checkout -b feature-branch
+     ```
 
-Submit a pull request.
+4. **Make your changes**
+   - Implement your feature or fix in your local repository.
+
+5. **Commit your changes**
+   - Stage your changes:
+     ```bash
+     git add .
+     ```
+   - Commit your changes with a meaningful commit message:
+     ```bash
+     git commit -m "Description of your changes"
+     ```
+
+6. **Push to the branch**
+   - Push your changes to your forked repository:
+     ```bash
+     git push origin feature-branch
+     ```
+
+7. **Submit a pull request**
+   - Go to the original repository on GitHub and you should see a prompt to create a pull request.
+   - Click on "Compare & pull request".
+   - Provide a meaningful title and description for your pull request.
+   - Click "Create pull request".
+
+### Guidelines
+
+- Ensure your code follows the project's coding style.
+- Write clear and concise commit messages.
+- Update documentation as necessary.
+- Make sure your changes do not break existing functionality.
+
+We appreciate your contributions and thank you for helping to improve CPS_HIDS!
 
