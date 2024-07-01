@@ -30,7 +30,7 @@ We welcome contributions to improve the CPS_HIDS dataset and its associated tool
 2. **Clone your forked repository**
    - Clone your forked repository to your local machine:
      ```bash
-     git clone https://github.com/YOUR_USERNAME/CPS_HIDS.git
+     git clone https://github.com/KRahim859/CPS_HIDS.git
      ```
    - Navigate into the cloned directory:
      ```bash
