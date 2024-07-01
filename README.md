@@ -5,6 +5,7 @@
 ## Dataset Description
 
 **CPS_HIDS** includes:
+
 The dataset includes data for different tasks like supervised learning, semi-supervised learning, anomaly detection and Gcodes files.
 
 
@@ -70,7 +71,6 @@ We welcome contributions to improve the CPS_HIDS dataset and its associated tool
 
 ### Guidelines
 
-- Ensure your code follows the project's coding style.
 - Write clear and concise commit messages.
 - Update documentation as necessary.
 - Make sure your changes do not break existing functionality.
