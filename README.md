@@ -43,7 +43,7 @@ To empower ML models in detecting CPS intrusions, we painstakingly extracted a p
   - {F}, Fnnn Set feedrate in mm/sec.
   - {E}, Enn minimum extrusion length of nozzle before a commanded/measured comparison is done, default 3mm. 
 
-**Dataset Preparation**
+## Dataset Preparation
 We processed dataset organiztion in such a way that it can be used for different machine learning tasks. Here’s an expanded breakdown of it:
 
 1. *Subsequently, the dataset is systematically arranged*: This means after collecting or preparing the raw data, it is processed and organized into a specific format. The arrangement is done thoughtfully and in a methodical way, depending on the tasks the data is going to be used for.
@@ -62,11 +62,11 @@ We processed dataset organiztion in such a way that it can be used for different
 
 6. *Anomaly detection*: This is a task where the model identifies data points that deviate significantly from the norm. In a CPS environment, anomaly detection would be used to flag abnormal behavior (e.g., an unexpected surge in sensor readings) that could indicate a system fault or security breach.
 
-### In summary, this process involves structuring the dataset in various ways to address different kinds of classification or detection tasks, depending on the objectives (binary, multi-class, anomaly detection). Each restructuring ensures that the model can learn the relevant features for the specific task at hand.
+In summary, this process involves structuring the dataset in various ways to address different kinds of classification or detection tasks, depending on the objectives (binary, multi-class, anomaly detection). Each restructuring ensures that the model can learn the relevant features for the specific task at hand.
 
-**CPS_HIDS** includes:
+### CPS_HIDS includes:
 
-- **Benign Dataset:** A wide collection of open-source Gcode print files has been carefully gathered, containing commands used as safe and normal (benign) instructions for machines. These commands include:
+**Benign Dataset:** A wide collection of open-source Gcode print files has been carefully gathered, containing commands used as safe and normal (benign) instructions for machines. These commands include:
 - *Movement commands* like G1 and G21, which control precise movements of machine parts.
 - *Control commands* like M28 and M109, which handle key operations like setting temperatures or writing to the SD card.
   
@@ -81,7 +81,7 @@ The dataset includes Gcode files that follow the NIST RS-274 / ISO 6983-1:2009 s
 
 This dataset provides a strong foundation for developing and testing intrusion detection mechanisms, as well as for improving the security of CPS environments.
 
-- **Malicious Dataset:** The creation of malicious data was carefully executed using Python’s {random} module to generate data that represents a wide variety of potential threats across the full operational space of the system. By using {random}, the malicious commands could be spread throughout different areas and scenarios, mimicking realistic attack patterns or abnormal behaviors that a Cyber-Physical System (CPS) might encounter.
+**Malicious Dataset:** The creation of malicious data was carefully executed using Python’s {random} module to generate data that represents a wide variety of potential threats across the full operational space of the system. By using {random}, the malicious commands could be spread throughout different areas and scenarios, mimicking realistic attack patterns or abnormal behaviors that a Cyber-Physical System (CPS) might encounter.
 
 For managing and structuring this data, Python’s {pandas} and {numpy} libraries were used extensively. These libraries allow for efficient data manipulation, enabling the seamless handling of large datasets, processing and transforming the data as required, and applying detailed labels to mark each malicious instance clearly. This comprehensive labeling process ensures that each command or instruction in the dataset is correctly identified as either normal or harmful.
 
@@ -92,7 +92,9 @@ The dataset was systematically constructed to create a large Gcode databank spec
   
 This structured labeling of malicious instructions plays a key role in distinguishing between normal (benign) and harmful (malicious) actions within a machine learning model, making it possible to train or test models for tasks like anomaly detection and intrusion prevention in CPS. The dataset is extensive, ensuring that various types of attacks and anomalies are represented, allowing for robust detection mechanisms to be built and refined.
 
-- **Data Preprocessing:** Preprocessing is a critical and transformative step that must be done before deploying any AI or machine learning model. It ensures that the data is clean, consistent, and in the correct format for analysis. This process involves various tasks such as handling missing values, normalizing data, and other operations depending on the quality and structure of the dataset.
+## Data Preprocessing 
+
+Preprocessing is a critical and transformative step that must be done before deploying any AI or machine learning model. It ensures that the data is clean, consistent, and in the correct format for analysis. This process involves various tasks such as handling missing values, normalizing data, and other operations depending on the quality and structure of the dataset.
 
 In this case, we specifically used a method called **zero-filling** to handle missing data. Zero-filling involves filling in any missing or empty values with zeroes. While this approach is simple and effective, it can sometimes introduce biases into the data. However, in our context of Gcode instrucitons execution, it is highly useful for maintaining the continuity and structure of the dataset.
 
@@ -102,7 +104,7 @@ In Gcode files, each instruction (and its corresponding parameters like X, Y, Z,
 
 By applying **zero-filling**, we ensure that any missing or non-executed instructions are clearly marked, which mirrors how the instructions are processed in real-world scenarios. This method guarantees that the dataset maintains its structural integrity, reflecting the actual flow of Gcode commands in Cyber-Physical Systems (CPS). Consequently, our preprocessing strategy ensures that the data is properly organized, facilitating accurate and reliable training for AI models that depend on this data.
 
--**Multi-class and Semi-Supervised Dataset:** 
+## Multi-class and Semi-Supervised Dataset 
 
 This dataset is structured to support both multi-class classification and semi-supervised learning tasks, which are crucial for developing robust AI models capable of detecting various types of activities or anomalies in a CPS environment.The classification is done based on the values of different Gcode parameters:
 
@@ -116,12 +118,14 @@ Additionally, some instructions have been deliberately left **unlabeled** to fac
 
 This carefully constructed dataset with **high**, **medium**, and **low** classifications, along with the inclusion of unlabeled data, provides a comprehensive framework for training models to handle both supervised and semi-supervised tasks. It reflects different levels of potential activity or risk, which is crucial for effective anomaly detection and intrusion prevention in Cyber-Physical Systems.
 
-- **Modeling of Behavioral Anomalies:** Several Gcode print files containing the intricate start and end sequences of a printing job are meticulously utilized for dataset creation, meticulously aiding in the identification of specific, subtle patterns of normal and malicious behaviors. Anomalous instructions can be extraordinarily rare, for instance, appearing ominously only once in a colossal print file brimming with thousands of other legitimate instructions, or they may reappear persistently, causing frustrating print delays. Our robust method must adeptly address both these elusive rare and repetitive malicious events. If such events occur precisely in their expected positions, they will be validated and marked as legitimate instructions; however, if the same instructions are detected in abnormal, unexpected positions, they will be stringently excluded from the execution list. For empirical and rigorous testing purposes, three distinct anomalies have been expertly modeled, each ingeniously introducing a unique, conspicuous deviation from the expected behavior.
+## Modeling of Behavioral Anomalies
+Several Gcode print files containing the intricate start and end sequences of a printing job are meticulously utilized for dataset creation, meticulously aiding in the identification of specific, subtle patterns of normal and malicious behaviors. Anomalous instructions can be extraordinarily rare, for instance, appearing ominously only once in a colossal print file brimming with thousands of other legitimate instructions, or they may reappear persistently, causing frustrating print delays. Our robust method must adeptly address both these elusive rare and repetitive malicious events. If such events occur precisely in their expected positions, they will be validated and marked as legitimate instructions; however, if the same instructions are detected in abnormal, unexpected positions, they will be stringently excluded from the execution list. For empirical and rigorous testing purposes, three distinct anomalies have been expertly modeled, each ingeniously introducing a unique, conspicuous deviation from the expected behavior.
   - {The {G28} - Move to Origin (Home) Anomaly}: This command homes all printer axes and is usually used at the start. Using G28 elsewhere causes delays and is considered an anomaly.
   - {The {M104} - Set Extruder Temperature Anomaly}: This command is used to control temperature and is considered an anomaly if it occurs before the end of printing.
   - {The {M84} -  Stop idle hold Anomaly}: This anomaly disables or closes down opertion of a motor before the actual start of job or task close down sequence. 
 
-- **Sources**: Collected from an operational reprap based 3D printer in a controlled environment with free Gcode printfiles downloaded from below sources:-
+## Sources
+Collected from an operational reprap based 3D printer in a controlled environment with free Gcode printfiles downloaded from below sources:-
   - www.3dbenchy.com
   - www.Thingverse.com
   - www.Printables.com
