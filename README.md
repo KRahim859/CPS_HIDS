@@ -23,8 +23,8 @@ G-code is a sequential lines of instructions, each telling the 3D printer to per
 
 To empower ML models in detecting CPS intrusions, we painstakingly extracted a plethora of potential G-code features, cataloging their respective values as distinctive instances, as elucidated below:-
 -  G0 & G1: Linear Motion : G0 & G1 commands are responsible for linear motion and extrusion 
-  - G0 X<pos> Y<pos> Z<pos> F<rate> E<pos>
-  - G1 X<pos> Y<pos> Z<pos> F<rate> E<pos>
+  - G0 X[pos] Y[pos] Z[pos] F[rate] E[pos]
+  - G1 X[pos] Y[pos] Z[pos] F[rate] E[pos]
 - Other G-code commands:
   -   {G28} & {G29}: Auto-Home & -Bed Leveling: We call “homing” the process of setting the physical limits of all movement axes. The G28 command will perform this task by moving the printhead until it triggers endstops to acknowledge the limits.
   -   {G21}, Set Units to Millimeters
@@ -35,8 +35,8 @@ To empower ML models in detecting CPS intrusions, we painstakingly extracted a p
   - {M82}, Set extruder to absolute mode
   - {M84}, Stop idle hold on all axis and extruder
   - {M106} & {M107}: Fan Control, M106 turns a fan on and sets its speed. This is especially useful for the part cooling fan, as different speeds are required when printing the first layer and while bridging. The M107 command will power off a specified fan. If no index parameter is provided, the part cooling fan is usually the one to be shut down.
-  - {M190}, S<temp>, R<temp>, T<index>; Wait for bed temperature to reach target temp
-  - {M104}, S<temp>, I<index>; Set Extruder Temperature
+  - {M190}, S[temp], R[temp], T[index]; Wait for bed temperature to reach target temp
+  - {M104}, S[temp], I[index]; Set Extruder Temperature
   - {M220}, Set speed factor override percentage
 - Positioning or Directions Setting: 
   - {S}, Snnn (optional) Spindle index, defaults to 0. Duet 2 supports 4 spindles max.
