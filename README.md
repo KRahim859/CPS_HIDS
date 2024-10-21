@@ -8,7 +8,7 @@ The **CPS_HIDS** dataset compiles 3D printer data aimed at aiding researchers in
 
 This Gcode dataset enabled the creation of a Host based Intrusion Detection System (HIDS) on a Raspberry Pi4, which can be smoothly integrated into automated manufacturing workflows in 3D printers and CNC machines. The developed methodology can effortlessly extend to resource-constrained CPS and larger Systems of Systems (SoS). 
 
-Our HIDS incorporates context-aware security models tailored to meet the operational environment's requirements, including critical physical limits, thresholds, and behavioral anomalies. We have introduced an independent, lightweight HIDS with a signature-based ruleset, augmented by ML and DL-based anomaly detection models. A decision engine will assess whether commands are legitimate or malicious, thus permitting or blocking instructions from the local CPS execution queue. A feedback loop can enhance its detection engine by formulating new signatures or detecting new anomalies. This feedback also offers sensory data for the management and oversight of CPS devices or systems of systems. The proposed CPS-HIDS on RPi4 executes real-time processing of instructions from either remote or local administrators for a locally deployed CPS. Signature-based detection provides precise protection against known attacks with minimal processing load. For anomaly detection using ML and DL techniques, we are testing memory-efficient and compact pre-trained models appropriate for a resource-limited processing unit in an independent HIDS. The goal is to identify simple algorithms capable of conducting limited learning within CPS environments.
+Our Host Intrusion Detection System (HIDS) is designed to fit the specific needs of the CPS' operational environment, taking into account physical limits, thresholds, and abnormal behaviors. We have developed a lightweight, independent HIDS that combines a signature-based ruleset with machine learning (ML) and deep learning (DL) models for detecting anomalies. A decision engine checks if commands are safe or malicious, allowing or blocking them from the local CPS execution queue. The proposed CPS-HIDS processes instructions in real-time from either remote or local administrators in a CPS setup. The signature-based system efficiently detects known attacks with minimal computing power. For anomaly detection, we are experimenting with compact, memory-efficient ML and DL models suited to the limited resources of an independent HIDS. The aim is to use simple algorithms capable of learning and adapting within the CPS environment.
 
 ## Dataset Description
 
@@ -27,42 +27,99 @@ To empower ML models in detecting CPS intrusions, we painstakingly extracted a p
   - G1 X<pos> Y<pos> Z<pos> F<rate> E<pos>
 - Other G-code commands:
   -   {G28} & {G29}: Auto-Home & -Bed Leveling: We call “homing” the process of setting the physical limits of all movement axes. The G28 command will perform this task by moving the printhead until it triggers endstops to acknowledge the limits.
-  -   {G21},
-  -   {G92},
+  -   {G21}, Set Units to Millimeters
+  -   {G91}: Set to Relative Positioning 
+  -   {G92}, Set Position
   -   {G90} and {G91}: The G90 and G91 commands tell the machine how to interpret coordinates used for movement. G90 establishes “absolute positioning”, which is usually the default, while G91 is for “relative positioning”.
 - M-code: These regulate non-movement operations, e.g. {M104} controls the temperature of extruder. We extracted
-  - {M82},
-  - {M84},
-  - {M107},
-  - {M190},
-  - {M104},
-  - {M220} etc.
-- Position and Directions: These variables are relative to the {X}, {Y}, and {Z} axes.
-  - {S} feature is used for spindle speed.
-  - {F} feature measures feedrate.
-  - {E} feature is extrusion measure of nozzle. 
+  - {M82}, Set extruder to absolute mode
+  - {M84}, Stop idle hold on all axis and extruder
+  - {M106} & {M107}: Fan Control, M106 turns a fan on and sets its speed. This is especially useful for the part cooling fan, as different speeds are required when printing the first layer and while bridging. The M107 command will power off a specified fan. If no index parameter is provided, the part cooling fan is usually the one to be shut down.
+  - {M190}, S<temp>, R<temp>, T<index>; Wait for bed temperature to reach target temp
+  - {M104}, S<temp>, I<index>; Set Extruder Temperature
+  - {M220}, Set speed factor override percentage
+- Positioning or Directions Setting: 
+  - {S}, Snnn (optional) Spindle index, defaults to 0. Duet 2 supports 4 spindles max.
+  - {F}, Fnnn Set feedrate in mm/sec.
+  - {E}, Enn minimum extrusion length of nozzle before a commanded/measured comparison is done, default 3mm. 
 
-Subsequently, the dataset is systematically arranged into varying distributions of features and samples to facilitate distinct tasks, such as binary classification, multi-class classification, and anomaly detection.
+**Dataset Preparation**
+We processed dataset organiztion in such a way that it can be used for different machine learning tasks. Here’s an expanded breakdown of it:
+
+1. *Subsequently, the dataset is systematically arranged*: This means after collecting or preparing the raw data, it is processed and organized into a specific format. The arrangement is done thoughtfully and in a methodical way, depending on the tasks the data is going to be used for.
+
+2. *Varying distributions of features and samples*: This refers to how the dataset is partitioned or split, both in terms of:
+   - **Features**: The individual measurable properties or attributes of the data (e.g., in a CPS, features might include system logs, network traffic data, sensor readings, etc.).
+   - **Samples**: The individual instances or data points (e.g., multiple data logs, readings over time).
+   
+   The distributions can be altered to create different sub-datasets. For example, you could randomly sample from the dataset to create a balanced or imbalanced dataset (with different ratios of classes or labels). You might also select different combinations of features to be more suited for specific tasks.
+
+3. *To facilitate distinct tasks*: This means that the dataset is restructured or partitioned in such a way that it becomes suitable for different machine learning objectives or tasks.
+
+4. *Binary classification*: A task where the model classifies the data into one of two categories. For example, in an intrusion detection system (IDS), the task could be to classify whether network traffic is malicious or benign.
+
+5. *Multi-class classification*: A task where the model classifies data into more than two categories. For instance, in an IDS, this could involve classifying the type of attack (e.g., DoS, phishing, malware, etc.).
+
+6. *Anomaly detection*: This is a task where the model identifies data points that deviate significantly from the norm. In a CPS environment, anomaly detection would be used to flag abnormal behavior (e.g., an unexpected surge in sensor readings) that could indicate a system fault or security breach.
+
+### In summary, this process involves structuring the dataset in various ways to address different kinds of classification or detection tasks, depending on the objectives (binary, multi-class, anomaly detection). Each restructuring ensures that the model can learn the relevant features for the specific task at hand.
 
 **CPS_HIDS** includes:
 
-- **Benign Dataset:** A diverse selection of open-source Gcode print files has been meticulously gathered. These files harbor commands that have been ingeniously employed as benign instructions. Every command, from the precise maneuvers of G1 and G21 to the critical functionalities of M28 and M109, along with the detailed parameters for X, Y, Z, F, E, S, etc., have been meticulously classified as significant parameters or features. Utilizing the powerful capabilities of the Python library {gcodeparser}, these intricate Gcode files have been seamlessly transformed into accessible CSV files. Every single benign instruction has been distinctly marked with 'No' or '0'.
-The dataset includes data generated from Gcodes files (NIST RS-274 / ISO 6983-1:2009) for different tasks like supervised learning, semi-supervised learning for develping an update mechanism and anomaly detection over CPS.
+- **Benign Dataset:** A wide collection of open-source Gcode print files has been carefully gathered, containing commands used as safe and normal (benign) instructions for machines. These commands include:
+- *Movement commands* like G1 and G21, which control precise movements of machine parts.
+- *Control commands* like M28 and M109, which handle key operations like setting temperatures or writing to the SD card.
+  
+Each command, along with detailed parameters such as X, Y, Z (coordinates), F (feed rate), E (extruder), and S (speed), has been systematically classified as important features. This step is crucial for understanding the significance of each instruction within the machine's operation.
 
-- **Malicious Dataset:** To meticulously craft malicious data, Python’s {random} module was expertly harnessed to spawn data spanning the entire perilous spectrum of the designated workspace. Python’s {pandas} and {numpy} modules were deftly utilized for comprehensive data manipulation and intricate labeling. A myriad of datasets, each encompassing thousands of lines, were meticulously assembled to forge a vast Gcode databank. Malicious instructions were emphatically labeled as Drop ‘Yes’ or ‘1’.
+To make these Gcode instructions usable for machine learning models, the powerful Python library {gcodeparser} was used to convert the complex Gcode files into CSV format. This transformation makes the data much easier to analyze. Additionally, every benign (normal) instruction in the dataset is clearly labeled as 'No' or '0' to indicate that no suspicious or harmful activity is present.
 
-- **Data Preprocessing:** Preprocessing data is an absolutely vital and transformative step before deploying any AI model. This meticulous process encompasses managing missing values, normalization, and a myriad of other tasks that are contingent on the dataset's quality. We have astutely employed zero-filling to address the challenge of missing data. The straightforward yet potent zero-filling method, though it has the potential to introduce certain biases, is instrumental in maintaining data integrity. In the realm of Gcode files, every instruction (along with its parameters) is executed in a strict sequential order. Executed instructions are distinctly marked with a '1' and their corresponding parameter values on the same line, while all other non-executed instructions are marked with a '0'. Thus, our strategic choice of zero-filling authentically reflects the actual execution process of Gcode, ensuring an accurate simulation of real-world scenarios.
+The dataset includes Gcode files that follow the NIST RS-274 / ISO 6983-1:2009 standards and is designed for several machine learning tasks:
+- *Supervised learning*, where models learn from labeled data,
+- *Semi-supervised learning*, which can help develop mechanisms to update models over time,
+- *Anomaly detection*, which identifies unusual patterns or activities within Cyber-Physical Systems (CPS).
 
-- **Multi-class and Semi-Supervised Dataset:** 
-  - {X}, {Y} and {Z} parameters greater than threshold have Drop column ‘High'.
-  - {F}, {E} and {S} parameters greater than threshold have Drop column ‘Medium'.
-  - Remaining instructions are labeled ‘Low'.
-  - A number of instructions have been left unlabeled for semi-supervised testing. 
+This dataset provides a strong foundation for developing and testing intrusion detection mechanisms, as well as for improving the security of CPS environments.
+
+- **Malicious Dataset:** The creation of malicious data was carefully executed using Python’s {random} module to generate data that represents a wide variety of potential threats across the full operational space of the system. By using {random}, the malicious commands could be spread throughout different areas and scenarios, mimicking realistic attack patterns or abnormal behaviors that a Cyber-Physical System (CPS) might encounter.
+
+For managing and structuring this data, Python’s {pandas} and {numpy} libraries were used extensively. These libraries allow for efficient data manipulation, enabling the seamless handling of large datasets, processing and transforming the data as required, and applying detailed labels to mark each malicious instance clearly. This comprehensive labeling process ensures that each command or instruction in the dataset is correctly identified as either normal or harmful.
+
+Thousands of lines of Gcode data were meticulously generated, simulating a wide range of malicious activities within the CPS environment. Each of these lines was crafted to imitate potential security breaches or faults, such as commands that might cause machine malfunctions, unauthorized operations, or system disruptions.
+
+The dataset was systematically constructed to create a large Gcode databank specifically for security testing. In this process:
+- Every **malicious instruction** was clearly marked with 'Yes' or '1', indicating that the command is harmful or poses a threat.
+  
+This structured labeling of malicious instructions plays a key role in distinguishing between normal (benign) and harmful (malicious) actions within a machine learning model, making it possible to train or test models for tasks like anomaly detection and intrusion prevention in CPS. The dataset is extensive, ensuring that various types of attacks and anomalies are represented, allowing for robust detection mechanisms to be built and refined.
+
+- **Data Preprocessing:** Preprocessing is a critical and transformative step that must be done before deploying any AI or machine learning model. It ensures that the data is clean, consistent, and in the correct format for analysis. This process involves various tasks such as handling missing values, normalizing data, and other operations depending on the quality and structure of the dataset.
+
+In this case, we specifically used a method called **zero-filling** to handle missing data. Zero-filling involves filling in any missing or empty values with zeroes. While this approach is simple and effective, it can sometimes introduce biases into the data. However, in our context of Gcode instrucitons execution, it is highly useful for maintaining the continuity and structure of the dataset.
+
+In Gcode files, each instruction (and its corresponding parameters like X, Y, Z, etc.) must be executed in a specific sequential order for the machine to function correctly. As part of preprocessing, every instruction is marked based on whether it was executed or not:
+- *Executed instructions* are labeled with a '1', and their parameter values are included on the same line.
+- *Non-executed instructions* are labeled with a '0', indicating that they did not run.
+
+By applying **zero-filling**, we ensure that any missing or non-executed instructions are clearly marked, which mirrors how the instructions are processed in real-world scenarios. This method guarantees that the dataset maintains its structural integrity, reflecting the actual flow of Gcode commands in Cyber-Physical Systems (CPS). Consequently, our preprocessing strategy ensures that the data is properly organized, facilitating accurate and reliable training for AI models that depend on this data.
+
+-**Multi-class and Semi-Supervised Dataset:** 
+
+This dataset is structured to support both multi-class classification and semi-supervised learning tasks, which are crucial for developing robust AI models capable of detecting various types of activities or anomalies in a CPS environment.The classification is done based on the values of different Gcode parameters:
+
+- *X, Y, and Z parameters*: These represent the positional coordinates in Gcode, controlling the movement of the machine in three-dimensional space. When the values of these parameters exceed a certain threshold, the instruction is classified as **'High'** in the "Drop" column. This labeling indicates that the command involves significant or potentially risky movement.
+
+- *F, E, and S parameters*: These parameters control functions like feed rate (F), extruder movements (E), and speed (S). If any of these parameters exceed their respective thresholds, the instruction is labeled as **'Medium'** in the "Drop" column, representing a moderate level of activity or risk.
+
+- *Remaining instructions*: For commands that don't exceed the thresholds for any of the above parameters, they are assigned the label **'Low'** in the "Drop" column, signifying lower activity levels or minimal risk.
+
+Additionally, some instructions have been deliberately left **unlabeled** to facilitate **semi-supervised learning**. In semi-supervised learning, the model is trained on both labeled and unlabeled data, allowing it to infer patterns and make predictions based on the partially labeled dataset. This approach is especially useful for situations where fully labeled datasets are scarce or costly to create, enabling the AI model to learn and generalize better.
+
+This carefully constructed dataset with **high**, **medium**, and **low** classifications, along with the inclusion of unlabeled data, provides a comprehensive framework for training models to handle both supervised and semi-supervised tasks. It reflects different levels of potential activity or risk, which is crucial for effective anomaly detection and intrusion prevention in Cyber-Physical Systems.
 
 - **Modeling of Behavioral Anomalies:** Several Gcode print files containing the intricate start and end sequences of a printing job are meticulously utilized for dataset creation, meticulously aiding in the identification of specific, subtle patterns of normal and malicious behaviors. Anomalous instructions can be extraordinarily rare, for instance, appearing ominously only once in a colossal print file brimming with thousands of other legitimate instructions, or they may reappear persistently, causing frustrating print delays. Our robust method must adeptly address both these elusive rare and repetitive malicious events. If such events occur precisely in their expected positions, they will be validated and marked as legitimate instructions; however, if the same instructions are detected in abnormal, unexpected positions, they will be stringently excluded from the execution list. For empirical and rigorous testing purposes, three distinct anomalies have been expertly modeled, each ingeniously introducing a unique, conspicuous deviation from the expected behavior.
-  - {The {G28} Anomaly (Home All Axis)}: The G28 command homes all printer axes and is usually used at the start. Using G28 elsewhere causes delays and is considered an anomaly.
-  - {The {M104} Anomaly (Turn Off Temperature)}: The M104 command, used to control temperature, is considered an anomaly if it occurs before the end of printing.
-  - {The {M84} Anomaly (Disable Motor)}: The M84 anomaly involves disabling a motor before the task close down phase. 
+  - {The {G28} - Move to Origin (Home) Anomaly}: This command homes all printer axes and is usually used at the start. Using G28 elsewhere causes delays and is considered an anomaly.
+  - {The {M104} - Set Extruder Temperature Anomaly}: This command is used to control temperature and is considered an anomaly if it occurs before the end of printing.
+  - {The {M84} -  Stop idle hold Anomaly}: This anomaly disables or closes down opertion of a motor before the actual start of job or task close down sequence. 
 
 - **Sources**: Collected from an operational reprap based 3D printer in a controlled environment with free Gcode printfiles downloaded from below sources:-
   - www.3dbenchy.com
